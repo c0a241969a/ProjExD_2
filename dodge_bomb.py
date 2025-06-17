@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import random
 import pygame as pg
 
@@ -28,6 +29,28 @@ def check_bound(rct:pg.Rect) -> tuple[bool, bool]:
     return yoko, tate#横方向,縦方向の画面内判定結果を返す
 
 
+def gameover(screen: pg.Surface) -> None:
+    """
+    ゲームオーバー
+    Game Overの文字実装
+    こうかとんの実装
+    """
+    back_rect = pg.Surface((WIDTH, HEIGHT))
+    pg.draw.rect(back_rect, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT)) #対応するsurface , 色, 表示位置
+    screen.blit(back_rect, [0, 0])
+    fonto = pg.font.Font(None, 70)#文字のサイズ変更
+    txt = fonto.render("GameOver", True, (255, 255, 255))
+    rct =txt.get_rect()#文字の表示範囲の取得
+    rct.center = WIDTH/2,HEIGHT/2    #取得した表示範囲から文字の位置の設定
+    screen.blit(txt, rct)
+    kk2_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.5) #こうかとんの大きさの設定
+    screen.blit(kk2_img, [300, HEIGHT/2-50])#こうかとんの位置の設定1
+    screen.blit(kk2_img, [750, HEIGHT/2-50])#こうかとんの位置の設定2
+    pg.display.update()
+    time.sleep(5)
+    return
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -51,6 +74,7 @@ def main():
                 return
         
         if kk_rct.colliderect(bb_rct):#こうかとんRectと爆弾Rectの衝突判定
+            gameover(screen)
             print("ゲームオーバー")
             return
 
