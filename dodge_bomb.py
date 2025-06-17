@@ -12,6 +12,10 @@ DELTA = {   #移動用辞書
     pg.K_LEFT: (-5,0),
     pg.K_RIGHT: (+5,0),
 }
+DELTA2 = {
+    
+}   #移動用辞書
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -68,7 +72,17 @@ def  init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
         bb_imgs.append(bb_img)
     return bb_imgs, bb_accs
 
+def load_kk_images() -> dict[tuple[int, int], pg.Surface]:
+    """
+    各方向の移動ベクトルに対応するこうかとん画像を読み込んで辞書で返す
 
+    戻り値:
+        {(dx, dy): Surface} の辞書（こうかとんの向き画像）
+    """
+    
+    return kk_images
+
+    
 
 
 
@@ -79,6 +93,8 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
+    kk_images = load_kk_images()  # こうかとん画像辞書の初期化
+    kk_img = kk_images[(0, -1)]   # 初期は上向き画像
     kk_rct.center = 300, 200
     
     bb_img = pg.Surface((20,20)) #空のSurfaseを作る(爆弾用)
@@ -107,6 +123,17 @@ def main():
         vx == avx#加速した速さに置き換える
         vy == avy#加速した速さに置き換える
 
+        sum_mv = [0, 0]
+        for key, mv in DELTA.items():
+            if key_lst[key]:
+                sum_mv[0] += mv[0]
+                sum_mv[1] += mv[1]
+
+        kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True, True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
+            kk_img = load_kk_images(tuple(sum_mv), kk_images)  # ← 向きの画像に差し替え
+            screen.blit(kk_img, kk_rct)
 
         
 
