@@ -51,6 +51,28 @@ def gameover(screen: pg.Surface) -> None:
     return
 
 
+def  init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    爆弾のサイズと加速度の段階的なリストを生成して返す関数
+    戻り値:
+    爆弾Surfaceのリスト（サイズ1〜10段階）
+    対応する加速度リスト（1〜10）
+    """
+    bb_imgs = []
+
+    bb_accs = [a for a in range(1, 11)]  # 加速度：1〜10段階
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))  # サイズは20×倍率
+        bb_img.set_colorkey((0, 0, 0))     # 黒を透明色に設定
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)  # 赤い円
+        bb_imgs.append(bb_img)
+    return bb_imgs, bb_accs
+
+
+
+
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -58,7 +80,7 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-
+    
     bb_img = pg.Surface((20,20)) #空のSurfaseを作る(爆弾用)
     pg.draw.circle(bb_img,(255,0,0),(10,10),10)#赤い円を描く
     bb_img.set_colorkey((0,0,0))#黒を透明色に設定
@@ -77,6 +99,16 @@ def main():
             gameover(screen)
             print("ゲームオーバー")
             return
+        
+        bb_imgs, bb_accs = init_bb_imgs()
+        avx = vx * bb_accs[min(tmr//500, 9)]
+        avy = vy * bb_accs[min(tmr//500, 9)]
+        bb_img = bb_imgs[min(tmr//500, 9)]
+        vx == avx#加速した速さに置き換える
+        vy == avy#加速した速さに置き換える
+
+
+        
 
         screen.blit(bg_img, [0, 0]) 
         key_lst = pg.key.get_pressed()
@@ -98,7 +130,7 @@ def main():
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])#移動をなかったことにする
         screen.blit(kk_img, kk_rct)
 
-        bb_rct.move_ip(vx,vy)#爆弾の移動
+        bb_rct.move_ip(avx,avy)#爆弾の移動
         yoko, tate = check_bound(bb_rct)
         if not yoko:#横方向にはみ出ていたら
             vx *= -1
