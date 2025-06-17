@@ -12,9 +12,7 @@ DELTA = {   #移動用辞書
     pg.K_LEFT: (-5,0),
     pg.K_RIGHT: (+5,0),
 }
-DELTA2 = {
-    
-}   #移動用辞書
+
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -35,7 +33,7 @@ def check_bound(rct:pg.Rect) -> tuple[bool, bool]:
 
 def gameover(screen: pg.Surface) -> None:
     """
-    ゲームオーバー
+    ゲームオーバー時に,半透明の黒い画面上に「Game Over」と表示し,泣いているこうかとん画像を貼り付ける関数
     Game Overの文字実装
     こうかとんの実装
     """
@@ -57,6 +55,7 @@ def gameover(screen: pg.Surface) -> None:
 
 def  init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     """
+    docstring：サイズの異なる爆弾Surfaceを要素としたリストと加速度リストを返す
     爆弾のサイズと加速度の段階的なリストを生成して返す関数
     戻り値:
     爆弾Surfaceのリスト（サイズ1〜10段階）
@@ -72,20 +71,12 @@ def  init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
         bb_imgs.append(bb_img)
     return bb_imgs, bb_accs
 
-def load_kk_images() -> dict[tuple[int, int], pg.Surface]:
-    """
-    各方向の移動ベクトルに対応するこうかとん画像を読み込んで辞書で返す
-
-    戻り値:
-        {(dx, dy): Surface} の辞書（こうかとんの向き画像）
-    """
-    
-    return kk_images
-
-    
-
-
-
+# def load_kk_images() -> dict[tuple[int, int], pg.Surface]:
+#     kk_img = pg.Surface((20*r, 20*r)) 
+#     DELTA2 = {
+#     kk_img = pg.transform.rotozoom(kk_img, 0, 1.5)
+#     }      
+#     return kk_images
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
@@ -129,13 +120,11 @@ def main():
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
 
-        kk_rct.move_ip(sum_mv)
-        if check_bound(kk_rct) != (True, True):
-            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-            kk_img = load_kk_images(tuple(sum_mv), kk_images)  # ← 向きの画像に差し替え
-            screen.blit(kk_img, kk_rct)
-
-        
+        # kk_rct.move_ip(sum_mv)
+        # if check_bound(kk_rct) != (True, True):
+        #     kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
+        #     kk_img = load_kk_images(tuple(sum_mv), kk_images)  # ← 向きの画像に差し替え
+        #     screen.blit(kk_img, kk_rct)
 
         screen.blit(bg_img, [0, 0]) 
         key_lst = pg.key.get_pressed()
